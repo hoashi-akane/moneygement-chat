@@ -25,9 +25,15 @@ func (c *client) read(rs *rooms, r *room) {
 					log.Println("部屋作成")
 					newr := newRoom()
 					rs.rooms[message.RoomId] = newr
+					// 部屋を作成したら起動させておく（runをしないと部屋に入れない)
+					go rs.rooms[message.RoomId].run()
 				}
-				// 部屋に入る。clientのルームidを新しく設定
-				r.join <- c
+				// 現在の部屋を抜ける
+				r.leave <- c
+				// クライアントのルームを変える
+				c.room = rs.rooms[message.RoomId]
+				// rsの中から部屋を指定して入る。clientのルームidを新しく設定
+				c.room.join <- c
 				c.roomId = message.RoomId
 			}else{
 				// ルームidが同じならメッセージを配信
