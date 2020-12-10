@@ -29,12 +29,12 @@ func (c *client) read(rs *rooms, r *room) {
 					go rs.rooms[message.RoomId].run()
 				}
 				// 現在の部屋を抜ける
+				c.roomId = message.RoomId
 				r.leave <- c
 				// クライアントのルームを変える
 				c.room = rs.rooms[message.RoomId]
 				// rsの中から部屋を指定して入る。clientのルームidを新しく設定
 				c.room.join <- c
-				c.roomId = message.RoomId
 			}else{
 				// ルームidが同じならメッセージを配信
 				c.room.forward <- msg

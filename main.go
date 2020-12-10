@@ -16,11 +16,14 @@ type Message struct {
 	UserId   int    `json:"UserId"`
 	Message  string `json:"Message"`
 	RoomId   int    `json:"roomId"`
+	NickName string `json:"nickName"`
 }
 
 func main() {
 	fs := http.FileServer(http.Dir("./public"))
 	http.Handle("/", fs)
+
+	roomList.rooms = make(map[int]*room)
 
 	r := newRoom()
 	http.Handle("/room", r)
