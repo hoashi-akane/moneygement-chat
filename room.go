@@ -49,7 +49,6 @@ func (r *room) run() {
 				log.Println(msg)
 			//	ひとりひとりforでclientに入れて送信
 			for client := range r.clients {
-				log.Println("読取り")
 				select {
 				case client.send <- msg:
 				default:
@@ -71,6 +70,7 @@ var upgrader = &websocket.Upgrader{ReadBufferSize: socketBufferSize, WriteBuffer
 
 func (r *room) ServeHTTP(w http.ResponseWriter, req *http.Request){
 	socket, err := upgrader.Upgrade(w, req, nil)
+	fmt.Println("サーブ")
 
 	if err != nil {
 		log.Fatal(err)
@@ -81,12 +81,12 @@ func (r *room) ServeHTTP(w http.ResponseWriter, req *http.Request){
 		room: r,
 		roomId: 0,
 	}
-	roomList.rooms = make(map[int]*room)
 
 	r.join <- client
 	defer func() { r.leave <- client}()
 
 	//client.changeRooms(&roomList)
 	go client.write()
+	fmt.Println(&roomList)
 	client.read(&roomList, r)
 }
